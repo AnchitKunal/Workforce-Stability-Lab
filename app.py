@@ -210,7 +210,8 @@ Compared to Scenario A:
 This reflects whether current hiring capacity and compensation positioning are structurally sustainable.
 """
     )
-
+    st.markdown("---")
+    st.caption("Developed by Anchit Kunal | Workforce Stability Lab | Educational Simulation Tool")
     # ===============================
     # VISUAL ANALYSIS
     # ===============================
