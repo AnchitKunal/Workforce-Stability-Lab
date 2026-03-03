@@ -4,42 +4,65 @@ _Strategic Workforce Risk & Business Impact Simulation Engine_
 _**🔗 Live App: https://workforce-stability-lab.streamlit.app**_
 
 **Overview**
-Workforce Stability Lab is an interactive decision-support simulation tool designed to model workforce attrition risk, hiring capacity constraints, and revenue impact under varying strategic scenarios.
-The application enables HR leaders and business stakeholders to simulate:
-**Workforce headcount dynamics
-Attrition pressure relative to industry benchmarks
-Revenue implications of hiring and engagement constraints
-Reinforcing workforce decline loops**
+Workforce Stability Lab is a forward-looking workforce simulation engine designed to model:
+1. Attrition risk
+2. Hiring capacity constraints
+3. Engagement pressure
+4. Revenue impact under stress scenarios
 
-This project demonstrates applied HR analytics, system dynamics modeling, and executive decision visualization using Python and Streamlit.
+Unlike traditional HR dashboards that describe historical data, this tool simulates structural workforce instability before it manifests operationally. 
+It demonstrates applied system dynamics modeling in HR analytics using Python and Streamlit.
 
 **Business Problem**
-Organizations often react to attrition only after performance and revenue are affected.
+Organizations often respond to attrition only after performance and revenue have already been affected.
 
-This tool answers:
-1. What happens if attrition rises above industry benchmarks?
-2. What if hiring capacity cannot match exits?
+This engine addresses critical strategic questions:
+
+**1. What happens if attrition rises above industry benchmarks?
+2. What if hiring capacity cannot replace exits?
 3. How does compensation dissatisfaction influence long-term stability?
-4. When does workforce pressure become structurally unsustainable?
-_The simulation provides forward-looking risk visibility instead of retrospective reporting._
+4. When does workforce pressure become structurally unsustainable?**
 
-**Modeling Approach**
+The simulation provides forward-looking risk visibility instead of retrospective reporting.
+
+**System Dynamics Logic**
+
+The model captures a reinforcing workforce loop:
+
+Headcount ↓
+→ Workload ↑
+→ Engagement ↓
+→ Attrition ↑
+→ Further Headcount ↓
+
+A balancing mechanism exists:
+
+Attrition ↑
+→ Hiring Demand ↑
+→ HR Capacity Constraint
+→ Replacement Lag
+→ Revenue Impact
+System behavior depends on which force dominates.
+
+**Modeling Framework**
+
 The engine incorporates:
+1. Logistic attrition response function
+2. Engagement-driven attrition sensitivity
+3. Compensation gap multiplier
+4. Hiring capacity constraints
+5. 3-month productivity ramp curve
 
-Logistic attrition response function
-Engagement-driven attrition sensitivity
-Hiring capacity constraints
-Productivity ramp curves for new hires
-Industry-specific attrition benchmarks
-Reinforcing system dynamics loops
+**Industry-relative attrition benchmarks**
 
-**Key modeled mechanisms:** 
+1. Attrition bounding via maximum cap
+2. Core Mechanisms
+3. Attrition increases as engagement declines and compensation gap widens.
+4. Hiring capacity limits workforce replacement velocity.
+5. Overload reduces engagement.
+6. Reduced engagement further increases attrition.
+7. Revenue adjusts for productivity ramp stages.
 
-1. Attrition increases with engagement decline and compensation gap.
-2. Hiring capacity limits replacement velocity.
-3. Overload reduces engagement.
-4. Reduced engagement further increases attrition.
-5. Revenue is adjusted for productivity ramp of new hires.
 
 **Industry Benchmark Integration**
 Includes reference bands for: _IT / ITES, Manufacturing, Banking / Financial Services, Healthcare_
