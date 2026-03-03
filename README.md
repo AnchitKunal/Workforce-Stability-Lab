@@ -35,11 +35,11 @@ Reinforcing system dynamics loops
 
 **Key modeled mechanisms:** 
 
-_1. Attrition increases with engagement decline and compensation gap.
+1. Attrition increases with engagement decline and compensation gap.
 2. Hiring capacity limits replacement velocity.
 3. Overload reduces engagement.
 4. Reduced engagement further increases attrition.
-5. Revenue is adjusted for productivity ramp of new hires._
+5. Revenue is adjusted for productivity ramp of new hires.
 
 **Industry Benchmark Integration**
 Includes reference bands for: _IT / ITES, Manufacturing, Banking / Financial Services, Healthcare_
@@ -47,13 +47,13 @@ Benchmarks are derived from publicly available HR industry reports (annual rates
 
 **Features**
 
-_1. Dual scenario comparison (Base vs Stress)
+1. Dual scenario comparison (Base vs Stress)
 2. Executive KPI dashboard
 3. Industry-relative risk classification
 4. Strategic interpretation narrative
 5. Workforce headcount projection
 6. Attrition projection
-7. Revenue impact modeling_
+7. Revenue impact modeling
 
 _**Tech Stack: Python, Streamlit, NumPy, Pandas, Matplotlib**_
 
