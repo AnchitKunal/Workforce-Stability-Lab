@@ -843,7 +843,11 @@ if run:
     final_attr_pct = final_attr_b / 100
     
     # Risk index (0-100)
-    attrition_score = min(100, (final_attr_pct / bench_max) * 40)
+    attrition_score = min(40,max(0,
+        ((final_attr_pct - bench_min) /
+        (max(bench_max-bench_min,0.0001))) * 40
+        )
+        )
     
     engagement_score = max(
         0,
