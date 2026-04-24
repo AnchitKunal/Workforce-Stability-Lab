@@ -185,10 +185,14 @@ with col_bench:
     """, unsafe_allow_html=True)
 # Active benchmark values (used across presets + simulation)
 
+# ==========================================
+# INDUSTRY PRESETS
+# ==========================================
+
 INDUSTRY_PRESETS = {
 
 "IT / ITES": {
-    "stable": {
+    "stable":{
         "attr_b":0.008,
         "max_attr_b":0.014,
         "hr_b":10,
@@ -281,6 +285,44 @@ INDUSTRY_PRESETS = {
         "engage_b":50,
         "comp_b":0.17
     }
+}
+
+}
+
+# ==========================================
+# SHOCK SCENARIO LIBRARY
+# ==========================================
+
+SHOCK_SCENARIOS = {
+
+"None": None,
+
+"Hiring Freeze Shock":{
+    "hr_b_mult":0.4,
+    "attr_b_mult":1.35,
+    "engage_delta":-8,
+    "comp_gap_add":0.00
+},
+
+"Burnout Wave":{
+    "hr_b_mult":1.0,
+    "attr_b_mult":1.45,
+    "engage_delta":-15,
+    "comp_gap_add":0.00
+},
+
+"Compensation Compression":{
+    "hr_b_mult":1.0,
+    "attr_b_mult":1.25,
+    "engage_delta":-6,
+    "comp_gap_add":0.08
+},
+
+"Hypergrowth Attrition":{
+    "hr_b_mult":0.6,
+    "attr_b_mult":1.60,
+    "engage_delta":-10,
+    "comp_gap_add":0.05
 }
 
 }
@@ -403,6 +445,12 @@ if "preset_last" not in st.session_state:
 # ============================================================
 # QUICK SCENARIOS
 # ============================================================
+st.markdown("### Scenario Shock Library")
+
+shock_choice = st.selectbox(
+    "Apply Stress Event",
+    list(SHOCK_SCENARIOS.keys())
+)
 
 st.markdown("<h3 style='margin-bottom:10px;'>Quick Scenarios</h3>", unsafe_allow_html=True)
 
@@ -563,7 +611,37 @@ with col2:
         step=0.5,
         key="comp_b"
     ) / 100
+# ===============================
+# SHOCK OVERLAY ENGINE
+# ===============================
 
+if shock_choice != "None":
+
+    shock = SHOCK_SCENARIOS[shock_choice]
+
+    attr_b = min(
+        max_attr_b,
+        attr_b * shock["attr_b_mult"]
+    )
+
+    hr_b = max(
+        1,
+        int(hr_b * shock["hr_b_mult"])
+    )
+
+    engage_b = max(
+        40,
+        engage_b + shock["engage_delta"]
+    )
+
+    comp_b = min(
+        .35,
+        comp_b + shock["comp_gap_add"]
+    )
+
+    st.warning(
+      f"Shock Scenario Applied: {shock_choice}"
+    )
 # ============================================================
 # TIME
 # ============================================================
