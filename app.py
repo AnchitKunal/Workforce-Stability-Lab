@@ -777,13 +777,26 @@ if run:
     st.markdown("<br>", unsafe_allow_html=True)
     
     cc1, cc2, cc3 = st.columns(3, gap="large")
+    def short_money(n):
+        if abs(n) >= 10000000:   # 1 crore
+            return f"₹{n/10000000:.2f} Cr"
+        elif abs(n) >= 100000:   # 1 lakh
+            return f"₹{n/100000:.1f} L"
+        else:
+            return f"₹{n:,.0f}"
     
     with cc1:
         st.markdown(f"""
         <div class="card blue-card">
             <div class="label">Total Exits — Base Scenario</div>
             <div class="value">{total_exits_a:.0f} people</div>
-            <div class="meta">₹{cum_cost_a:,.0f} replacement cost</div>
+            <div style="opacity:.75;font-size:0.85rem;margin-top:8px;">
+            {short_money(cum_cost_a)} replacement cost
+            <br>
+            <span style="font-size:.72rem;">
+            (₹{cum_cost_a:,.0f})
+            </span>
+            </div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -792,7 +805,13 @@ if run:
         <div class="card amber-card">
             <div class="label">Total Exits — Stress Scenario</div>
             <div class="value">{total_exits_b:.0f} people</div>
-            <div class="meta">₹{cum_cost_b:,.0f} replacement cost</div>
+            <div style="opacity:.75;font-size:0.85rem;margin-top:8px;">
+            {short_money(cum_cost_b)} replacement cost
+            <br>
+            <span style="font-size:.72rem;">
+            (₹{cum_cost_b:,.0f})
+            </span>
+            </div>
         </div>
         """, unsafe_allow_html=True)
         
