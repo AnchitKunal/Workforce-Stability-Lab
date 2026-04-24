@@ -2,11 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-#from plotly.subplots import make_subplots
-#from fpdf import FPDF
-#import io
-#import base64
-#import datetime
+
 
 def clean_text(text):
     return str(text).encode("latin-1", "ignore").decode("latin-1")
@@ -44,7 +40,7 @@ st.markdown("""
 background:white;
 border:1px solid #E6EBF2;
 border-radius:20px;
-padding:28px 32px;
+padding:24px 26px;
 min-height:190px;              /* forces all KPI cards same height */
 display:flex;
 flex-direction:column;
@@ -69,11 +65,16 @@ line-height:1.4;
 
 /* Big KPI numbers */
 .card .value{
-font-size:2.35rem;
+font-size:1.95rem;
 font-weight:700;
 color:#1F2937;
 line-height:1.1;
 margin-bottom:10px;
+
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+letter-spacing:-0.02em;
 }
 
 /* Subtext */
@@ -208,7 +209,7 @@ INDUSTRY_PRESETS = {
     },
     "high":{
         "attr_b":0.025,
-        "max_attr_b":0.050,
+        "max_attr_b":0.040,
         "hr_b":2,
         "engage_b":58,
         "comp_b":0.18
@@ -305,8 +306,8 @@ SHOCK_SCENARIOS = {
 },
 
 "Burnout Wave":{
-    "hr_b_mult":1.0,
-    "attr_b_mult":1.20,
+    "hr_b_mult":0.8,
+    "attr_b_mult":1.35,
     "engage_delta":-15,
     "comp_gap_add":0.00
 },
@@ -368,16 +369,16 @@ def simulate_workforce(
         experienced += fully_productive_from_ramp
         employees = max(0.0, experienced + bucket_1 + bucket_2 + bucket_3)
 
-        overload=(0.4*exits + hires)/hr_capacity if hr_capacity > 0 else 2.0
+        overload = (0.4*exits + hires) / max(hr_capacity, exits,1) if hr_capacity > 0 else 2.0
         engagement_change = 1.2*(overload-1)
         engagement = max(0, min(100, engagement - engagement_change))
 
         engagement_gap = engagement_start - engagement
-        z=(0.012*engagement_gap)+(0.55*comp_gap)
+        z = -4 + (0.012*engagement_gap) + (0.55*comp_gap)
         logistic_component = 1 / (1 + np.exp(-z))
-        attrition = base_attrition + (max_attrition - base_attrition) * (
-            ((logistic_component-.5)*1.4)
-        )
+        attrition = base_attrition + (
+            max_attrition-base_attrition
+        ) * logistic_component
         attrition = max(0.0, min(max_attrition, attrition))
 
         revenue = (
@@ -392,8 +393,9 @@ def simulate_workforce(
         cumulative_cost += monthly_replace_cost
 
         # Productivity loss (experienced gap vs full bench)
-        productivity_loss = max(0,
-            (initial_employees-employees)*0.6*revenue_per_fte) if employees < initial_employees else 0.0
+        productivity_loss = (
+            initial_employees * revenue_per_fte
+        ) - revenue if employees < initial_employees else 0.0
 
         results.append({
             "Month":                    month,
@@ -408,8 +410,7 @@ def simulate_workforce(
             "Engagement":               engagement,
         })
 
-        #prev_exits = exits
-
+       
     return pd.DataFrame(results)
 
 # ============================================================
@@ -648,8 +649,6 @@ months = st.slider("📅 Projection Duration (Months)", 6, 36, 12)
 # RUN SIMULATION
 # ============================================================
 
-# run_col, _ = st.columns([1, 3])
-# st.markdown("")
 run = st.button("🚀 Run Simulation", use_container_width=True)
 def generate_pdf(
     df_a, df_b, industry, bench_min, bench_max, months,
@@ -772,41 +771,57 @@ if run:
     with cc1:
         st.markdown(f"""
         <div class="card blue-card">
-            <div style="font-size:0.9rem;color:#666;">Total Exits — Base Scenario</div>
-            <div style="font-size:1.4rem;font-weight:600;">{total_exits_a:.0f} people</div>
-            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
-                ₹{cum_cost_a:,.0f} replacement cost
-            </div>
+            <div class="label">Total Exits — Base Scenario</div>
+            <div class="value">{total_exits_a:.0f} people</div>
+            <div class="meta">₹{cum_cost_a:,.0f} replacement cost</div>
         </div>
         """, unsafe_allow_html=True)
     
     with cc2:
         st.markdown(f"""
         <div class="card amber-card">
-            <div style="font-size:0.9rem;color:#666;">Total Exits — Stress Scenario</div>
-            <div style="font-size:1.4rem;font-weight:600;">{total_exits_b:.0f} people</div>
-            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
-                ₹{cum_cost_b:,.0f} replacement cost
-            </div>
+            <div class="label">Total Exits — Stress Scenario</div>
+            <div class="value">{total_exits_b:.0f} people</div>
+            <div class="meta">₹{cum_cost_b:,.0f} replacement cost</div>
         </div>
         """, unsafe_allow_html=True)
-    
+        
+    def short_money(x):
+        if x >= 10000000:
+            return f"₹{x/10000000:.2f} Cr"
+        elif x >= 100000:
+            return f"₹{x/100000:.1f} Lakh"
+        else:
+            return f"₹{x:,.0f}"
+        
     with cc3:
         incremental = cum_cost_b - cum_cost_a
     
+        label = "Incremental Cost of Stress"
+        border_class = "red-card"
+        
+        if incremental >= 0:
+            amount = short_money(incremental)
+            meta = "Additional replacement cost vs base"
+        else:
+            amount = f"−{short_money(abs(incremental))}"
+            meta = "Lower replacement cost vs base"
+    
         st.markdown(f"""
-        <div class="card red-card">
-            <div style="font-size:0.9rem;color:#666;">Incremental Cost of Stress</div>
-            <div style="font-size:1.4rem;font-weight:600;">₹{incremental:,.0f}</div>
-            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
-                vs Base Scenario
-            </div>
+        <div class="card {border_class}">
+            <div class="label">{label}</div>
+            <div class="value">{amount}</div>
+            <div class="meta">{meta}</div>
         </div>
         """, unsafe_allow_html=True)
     # ============================================================
     # STRATEGIC INTERPRETATION (FINAL FIX)
     # ============================================================
-
+    if cost_diff >= 0:
+        cost_line = f"Incremental cost: ₹{cost_diff:,.0f}"
+    else:
+        cost_line = f"Savings vs base: ₹{abs(cost_diff):,.0f}"
+        
     st.markdown('<div class="section-header">Strategic Interpretation</div>', unsafe_allow_html=True)
 
     preset = st.session_state.get("preset", "custom")
@@ -848,18 +863,21 @@ if run:
 
     # ALWAYS RENDER (THIS WAS THE BUG)
     st.markdown(f"""
-        <div class="{risk_cls}">
-        <div class="risk-text">
-        <strong>{risk_icon} Overall Assessment</strong><br><br>
-        Under the stress scenario, the organization is experiencing <strong>{risk_text}</strong><br><br>
-        <strong>Key deltas vs Base Scenario:</strong><br>
-        • Headcount change: <strong>{emp_diff:+.1f}</strong><br>
-        • Revenue impact: <strong>₹{rev_diff:+,.0f}</strong><br>
-        • Final attrition: <strong>{final_attr_b:.2f}%</strong> (Base: {final_attr_a:.2f}%)<br>
-        • Incremental cost: <strong>₹{cost_diff:+,.0f}</strong>
-        </div>
-        </div>
-        """, unsafe_allow_html=True)
+    <div class="{risk_cls}">
+    <strong>{risk_icon} Overall Assessment</strong><br><br>
+    
+    Under the stress scenario, the organization is experiencing
+    <strong>{risk_text}</strong><br><br>
+    
+    <strong>Key deltas vs Base Scenario:</strong><br>
+    • Headcount change: <strong>{emp_diff:+.1f}</strong><br>
+    • Revenue impact: <strong>₹{rev_diff:+,.0f}</strong><br>
+    • Final attrition: <strong>{final_attr_b:.2f}%</strong>
+    (Base: {final_attr_a:.2f}%)<br>
+    • {cost_line}
+    
+    </div>
+    """, unsafe_allow_html=True)
     
 
   
