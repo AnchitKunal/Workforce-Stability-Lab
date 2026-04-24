@@ -40,47 +40,97 @@ st.markdown("""
 }
 
 /* Card UI */
-.card {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 14px;
-    border: 1px solid #E6EAF0;
-    box-shadow: 0px 6px 18px rgba(0,0,0,0.06);
-    margin-bottom: 18px;
+.card{
+background:white;
+border:1px solid #E6EBF2;
+border-radius:20px;
+padding:28px 32px;
+min-height:190px;              /* forces all KPI cards same height */
+display:flex;
+flex-direction:column;
+justify-content:center;
+box-shadow:0 4px 14px rgba(0,0,0,.04);
+transition:.2s ease;
 }
 
-/* Add separation */
-.section-gap {
-    margin-top: 25px;
+.card:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 22px rgba(0,0,0,.06);
 }
 
-/* Section Titles */
-.section-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 10px;
+/* KPI titles */
+.card .label{
+font-size:1rem;
+font-weight:500;
+color:#667085;
+margin-bottom:14px;
+line-height:1.4;
 }
 
-/* Scenario Headers */
-.scenario-a {
-    color: #2E86DE;
-    font-weight: 600;
+/* Big KPI numbers */
+.card .value{
+font-size:2.35rem;
+font-weight:700;
+color:#1F2937;
+line-height:1.1;
+margin-bottom:10px;
 }
 
-.scenario-b {
-    color: #E74C3C;
-    font-weight: 600;
+/* Subtext */
+.card .meta{
+font-size:.9rem;
+color:#8A94A6;
 }
 
-/* Buttons */
-.stButton>button {
-    border-radius: 8px;
-    font-weight: 600;
+
+/* left accent cards */
+.blue-card{
+border-left:6px solid #2E86DE;
 }
 
-# .stSlider > div[data-baseweb="slider"] > div {
-    # background: #E5EAF2 !important;
-    # }
+.amber-card{
+border-left:6px solid #F39C12;
+}
+
+.red-card{
+border-left:6px solid #E74C3C;
+}
+
+
+/* strategic interpretation */
+.risk-box-red,
+.risk-box-orange,
+.risk-box-green{
+border-radius:18px;
+padding:28px 30px;
+margin-top:20px;
+box-shadow:0 4px 14px rgba(0,0,0,.04);
+}
+
+.risk-box-red{
+background:#FFF5F5;
+border-left:6px solid #DC2626;
+}
+
+.risk-box-orange{
+background:#FFF8ED;
+border-left:6px solid #F59E0B;
+}
+
+.risk-box-green{
+background:#F0FDF4;
+border-left:6px solid #16A34A;
+}
+
+
+/* section headers */
+.section-header{
+font-size:1.55rem;
+font-weight:700;
+margin-top:28px;
+margin-bottom:18px;
+color:#1F2937;
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -632,7 +682,7 @@ if run:
     
     with cc1:
         st.markdown(f"""
-        <div class="card" style="border-left:4px solid #2E86DE;">
+        <div class="card blue-card">
             <div style="font-size:0.9rem;color:#666;">Total Exits — Base Scenario</div>
             <div style="font-size:1.4rem;font-weight:600;">{total_exits_a:.0f} people</div>
             <div style="font-size:0.8rem;color:#888;margin-top:4px;">
@@ -643,7 +693,7 @@ if run:
     
     with cc2:
         st.markdown(f"""
-        <div class="card" style="border-left:4px solid #F39C12;">
+        <div class="card amber-card">
             <div style="font-size:0.9rem;color:#666;">Total Exits — Stress Scenario</div>
             <div style="font-size:1.4rem;font-weight:600;">{total_exits_b:.0f} people</div>
             <div style="font-size:0.8rem;color:#888;margin-top:4px;">
@@ -656,7 +706,7 @@ if run:
         incremental = cum_cost_b - cum_cost_a
     
         st.markdown(f"""
-        <div class="card" style="border-left:4px solid #E74C3C;">
+        <div class="card red-card">
             <div style="font-size:0.9rem;color:#666;">Incremental Cost of Stress</div>
             <div style="font-size:1.4rem;font-weight:600;">₹{incremental:,.0f}</div>
             <div style="font-size:0.8rem;color:#888;margin-top:4px;">
