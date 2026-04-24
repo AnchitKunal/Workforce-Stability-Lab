@@ -2,11 +2,11 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from fpdf import FPDF
-import io
-import base64
-import datetime
+#from plotly.subplots import make_subplots
+#from fpdf import FPDF
+#import io
+#import base64
+#import datetime
 
 def clean_text(text):
     return str(text).encode("latin-1", "ignore").decode("latin-1")
@@ -139,7 +139,7 @@ color:#1F2937;
 # HEADER
 # ============================================================
 
-#st.markdown('<div class="main-title">⚡ Workforce Stability Lab</div>', unsafe_allow_html=True)
+
 st.title("⚡ Workforce Stability Lab")
 st.caption("Simulate workforce risk scenarios and business impact in real-time")
 st.markdown('<div class="caption"> Developed by Anchit Kunal</div>', unsafe_allow_html=True)
@@ -207,8 +207,8 @@ INDUSTRY_PRESETS = {
         "comp_b":0.10
     },
     "high":{
-        "attr_b":0.028,
-        "max_attr_b":0.035,
+        "attr_b":0.025,
+        "max_attr_b":0.050,
         "hr_b":2,
         "engage_b":58,
         "comp_b":0.18
@@ -232,7 +232,7 @@ INDUSTRY_PRESETS = {
     },
     "high":{
         "attr_b":0.018,
-        "max_attr_b":0.025,
+        "max_attr_b":0.035,
         "hr_b":2,
         "engage_b":55,
         "comp_b":0.15
@@ -280,7 +280,7 @@ INDUSTRY_PRESETS = {
     },
     "high":{
         "attr_b":0.024,
-        "max_attr_b":0.032,
+        "max_attr_b":0.04,
         "hr_b":2,
         "engage_b":50,
         "comp_b":0.17
@@ -306,7 +306,7 @@ SHOCK_SCENARIOS = {
 
 "Burnout Wave":{
     "hr_b_mult":1.0,
-    "attr_b_mult":1.45,
+    "attr_b_mult":1.20,
     "engage_delta":-15,
     "comp_gap_add":0.00
 },
@@ -320,7 +320,7 @@ SHOCK_SCENARIOS = {
 
 "Hypergrowth Attrition":{
     "hr_b_mult":0.6,
-    "attr_b_mult":1.60,
+    "attr_b_mult":1.15,
     "engage_delta":-10,
     "comp_gap_add":0.05
 }
@@ -341,7 +341,7 @@ def simulate_workforce(
     employees   = float(initial_employees)
     engagement  = float(engagement_start)
     attrition   = float(base_attrition)
-    prev_exits  = 0.0
+    #prev_exits  = 0.0
 
     bucket_1 = bucket_2 = bucket_3 = 0.0
     experienced = employees   
@@ -358,7 +358,7 @@ def simulate_workforce(
         bucket_2    *= (1 - exit_ratio)
         bucket_3    *= (1 - exit_ratio)
 
-        hires = min(hr_capacity, max(0.0, prev_exits))
+        hires=min(hr_capacity, exits)
 
         fully_productive_from_ramp = bucket_3
         bucket_3 = bucket_2
@@ -368,15 +368,15 @@ def simulate_workforce(
         experienced += fully_productive_from_ramp
         employees = max(0.0, experienced + bucket_1 + bucket_2 + bucket_3)
 
-        overload = (exits + hires) / hr_capacity if hr_capacity > 0 else 2.0
-        engagement_change = 0.5 * (overload - 1)
+        overload=(0.4*exits + hires)/hr_capacity if hr_capacity > 0 else 2.0
+        engagement_change = 1.2*(overload-1)
         engagement = max(0, min(100, engagement - engagement_change))
 
         engagement_gap = engagement_start - engagement
-        z = (0.02 * engagement_gap) + (1.0 * comp_gap)
+        z=(0.012*engagement_gap)+(0.55*comp_gap)
         logistic_component = 1 / (1 + np.exp(-z))
         attrition = base_attrition + (max_attrition - base_attrition) * (
-            (logistic_component - 0.5) * 2
+            ((logistic_component-.5)*1.4)
         )
         attrition = max(0.0, min(max_attrition, attrition))
 
@@ -392,7 +392,8 @@ def simulate_workforce(
         cumulative_cost += monthly_replace_cost
 
         # Productivity loss (experienced gap vs full bench)
-        productivity_loss = (initial_employees - employees) * revenue_per_fte if employees < initial_employees else 0.0
+        productivity_loss = max(0,
+            (initial_employees-employees)*0.6*revenue_per_fte) if employees < initial_employees else 0.0
 
         results.append({
             "Month":                    month,
@@ -407,7 +408,7 @@ def simulate_workforce(
             "Engagement":               engagement,
         })
 
-        prev_exits = exits
+        #prev_exits = exits
 
     return pd.DataFrame(results)
 
@@ -434,17 +435,7 @@ def validate_inputs(base, max_attr, hr_cap, emp):
 # Reset state when preset changes
 if "preset_last" not in st.session_state:
      st.session_state.preset_last = "Custom"
-# =========================
-# PRESET SCENARIOS
-# =========================
 
-# =========================
-# INTELLIGENT PRESET SYSTEM (FINAL)
-# ============================================================
-
-# ============================================================
-# QUICK SCENARIOS
-# ============================================================
 st.markdown("### Scenario Shock Library")
 
 shock_choice = st.selectbox(
@@ -612,35 +603,40 @@ with col2:
         key="comp_b"
     ) / 100
 # ===============================
-# SHOCK OVERLAY ENGINE
+# SHOCK OVERLAY ENGINE (SAFE)
 # ===============================
+
+# preserve raw user inputs
+sim_attr_b   = attr_b
+sim_max_b    = max_attr_b
+sim_hr_b     = hr_b
+sim_engage_b = engage_b
+sim_comp_b   = comp_b
 
 if shock_choice != "None":
 
     shock = SHOCK_SCENARIOS[shock_choice]
 
-    attr_b = min(
-        max_attr_b,
-        attr_b * shock["attr_b_mult"]
-    )
+    # apply shock ONLY to simulation copies
+    sim_attr_b = attr_b * shock["attr_b_mult"]
 
-    hr_b = max(
+    # keep logic valid automatically
+    if sim_attr_b >= max_attr_b:
+        sim_max_b = sim_attr_b * 1.25   # auto expand worst-case ceiling
+
+    sim_hr_b = max(
         1,
         int(hr_b * shock["hr_b_mult"])
     )
 
-    engage_b = max(
+    sim_engage_b = max(
         40,
         engage_b + shock["engage_delta"]
     )
 
-    comp_b = min(
-        .35,
+    sim_comp_b = min(
+        0.35,
         comp_b + shock["comp_gap_add"]
-    )
-
-    st.warning(
-      f"Shock Scenario Applied: {shock_choice}"
     )
 # ============================================================
 # TIME
@@ -701,7 +697,12 @@ if run:
     
     # --- Validate ---
     errors_a = validate_inputs(attr_a, max_attr_a, hr_a, emp_a)
-    errors_b = validate_inputs(attr_b, max_attr_b, hr_b, emp_b)
+    errors_b = validate_inputs(
+    sim_attr_b,
+    sim_max_b,
+    sim_hr_b,
+    emp_b
+)
     all_errors = [f"**Scenario A:** {e}" for e in errors_a] + \
                  [f"**Scenario B:** {e}" for e in errors_b]
 
@@ -712,7 +713,17 @@ if run:
 
     # --- Simulate ---
     df_a = simulate_workforce(emp_a, attr_a, max_attr_a, hr_a, rev_a, engage_a, comp_a, sal_a, months)
-    df_b = simulate_workforce(emp_b, attr_b, max_attr_b, hr_b, rev_b, engage_b, comp_b, sal_b, months)
+    df_b = simulate_workforce(
+    emp_b,
+    sim_attr_b,
+    sim_max_b,
+    sim_hr_b,
+    rev_b,
+    sim_engage_b,
+    sim_comp_b,
+    sal_b,
+    months
+)
 
     # ============================================================
     # KPI SUMMARY
