@@ -20,25 +20,9 @@ st.set_page_config(
 st.markdown("""
 <style>
 .block-container {
-    padding-top: 0.8rem;
-    padding-bottom: 1rem;
+    max-width: 1100px;
+    padding-top: 2rem;
 }
-
-.section-header {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: #0D1B2A;
-    border-bottom: 1px solid #E5EAF2;
-    padding-bottom: 4px;
-    margin-top: 18px;
-    margin-bottom: 10px;
-}
-
-hr {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -48,70 +32,56 @@ hr {
 
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-    html, body, [class*="css"] {
-        font-family: 'DM Sans', sans-serif;
-    }
-    .main-title {
-        font-family: 'DM Serif Display', serif;
-        font-size: 2.6rem;
-        color: #0D1B2A;
-        letter-spacing: -0.5px;
-        margin-bottom: 0;
-    }
-    .sub-caption {
-        color: #5C6E82;
-        font-size: 0.95rem;
-        margin-top: 0.2rem;
-    }
-    .kpi-card {
-        background: #F5F8FF;
-        border-left: 4px solid #1A56DB;
-        border-radius: 8px;
-        padding: 16px 20px;
-        margin-bottom: 12px;
-    }
-    .kpi-label { font-size: 0.78rem; color: #5C6E82; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-    .kpi-value { font-size: 1.7rem; font-weight: 700; color: #0D1B2A; font-family: 'DM Serif Display', serif; }
-    .kpi-delta-pos { color: #0e7f4e; font-size: 0.85rem; font-weight: 600; }
-    .kpi-delta-neg { color: #c0392b; font-size: 0.85rem; font-weight: 600; }
-    .risk-box-red    { background:#FEF2F2; border-left:4px solid #DC2626; border-radius:8px; padding:16px 20px; }
-    .risk-box-orange { background:#FFF7ED; border-left:4px solid #EA580C; border-radius:8px; padding:16px 20px; }
-    .risk-box-green  { background:#F0FDF4; border-left:4px solid #16A34A; border-radius:8px; padding:16px 20px; }
-    .risk-text { font-size: 0.95rem; color: #1e293b; line-height:1.7; }
-    .section-header {
-        font-family: 'DM Serif Display', serif;
-        font-size: 1.35rem;
-        color: #0D1B2A;
-        border-bottom: 2px solid #E5EAF2;
-        padding-bottom: 6px;
-        margin-top: 28px;
-        margin-bottom: 14px;
-    }
-    .stButton>button {
-        background: #1A56DB;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 600;
-        padding: 12px 40px;
-        width: 100%;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    .stButton>button:hover { background: #1341B3; }
-    .footer-text { color: #8899aa; font-size: 0.78rem; text-align: center; margin-top: 32px; }
-    div[data-testid="stMetricValue"] { font-size: 1.6rem !important; }
-    .cost-highlight {
-        background: linear-gradient(135deg, #0D1B2A 0%, #1A56DB 100%);
-        border-radius: 12px;
-        padding: 20px 24px;
-        color: white;
-    }
-    .cost-highlight .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.7; }
-    .cost-highlight .value { font-size: 2rem; font-weight: 700; font-family: 'DM Serif Display', serif; }
+/* Page Width */
+.block-container {
+    max-width: 1100px;
+    padding-top: 2rem;
+}
+
+/* Card UI */
+.card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    border: 1px solid #E6EAF0;
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+}
+
+/* Add separation */
+.section-gap {
+    margin-top: 25px;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Scenario Headers */
+.scenario-a {
+    color: #2E86DE;
+    font-weight: 600;
+}
+
+.scenario-b {
+    color: #E74C3C;
+    font-weight: 600;
+}
+
+/* Buttons */
+.stButton>button {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+# .stSlider > div[data-baseweb="slider"] > div {
+    # background: #E5EAF2 !important;
+    # }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -119,8 +89,10 @@ st.markdown("""
 # HEADER
 # ============================================================
 
-st.markdown('<div class="main-title">⚡ Workforce Stability Lab</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-caption">Strategic simulation engine for workforce risk & business impact modeling &nbsp;|&nbsp; Developed by Anchit Kunal</div>', unsafe_allow_html=True)
+#st.markdown('<div class="main-title">⚡ Workforce Stability Lab</div>', unsafe_allow_html=True)
+st.title("⚡ Workforce Stability Lab")
+st.caption("Simulate workforce risk scenarios and business impact in real-time")
+st.markdown('<div class="caption"> Developed by Anchit Kunal</div>', unsafe_allow_html=True)
 st.markdown("---")
 
 # ============================================================
@@ -134,20 +106,28 @@ industry_benchmarks = {
     "Healthcare":                    {"min": 0.008,  "max": 0.017},
 }
 
-col_ind, col_bench = st.columns([2, 3])
-with col_ind:
-    industry = st.selectbox("🏭 Industry Benchmark", list(industry_benchmarks.keys()))
+col_ind, col_bench = st.columns([2,3], vertical_alignment="bottom")
 
+with col_ind:
+    industry = st.selectbox(
+        "🏭 Industry Benchmark",
+        list(industry_benchmarks.keys())
+    )
+with col_bench:
+    st.markdown("""
+    <div class="card" style="
+        margin-top:28px;
+        padding:18px;
+        background:#EEF5FF;
+        border-left:4px solid #2E86DE;">
+        <strong>IT / ITES</strong> Monthly attrition benchmark:
+        <strong>0.8%–2.1%</strong>
+        (≈10%–25% annually)
+    </div>
+    """, unsafe_allow_html=True)
+# Active benchmark values (used across presets + simulation)
 bench_min = industry_benchmarks[industry]["min"]
 bench_max = industry_benchmarks[industry]["max"]
-
-with col_bench:
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.info(
-        f"**{industry}** — Monthly attrition benchmark: "
-        f"**{bench_min*100:.1f}% – {bench_max*100:.1f}%** "
-        f"(≈ **{bench_min*12*100:.0f}% – {bench_max*12*100:.0f}%** annually)"
-    )
 
 # ============================================================
 # SIMULATION ENGINE
@@ -167,7 +147,7 @@ def simulate_workforce(
     prev_exits  = 0.0
 
     bucket_1 = bucket_2 = bucket_3 = 0.0
-    experienced = employees
+    experienced = employees   
     results = []
     cumulative_cost = 0.0
 
@@ -241,7 +221,7 @@ def simulate_workforce(
 def validate_inputs(base, max_attr, hr_cap, emp):
     errors = []
     if base >= max_attr:
-        errors.append("⚠️ Base Attrition must be **less than** Max Attrition.")
+        errors.append("⚠️ Worst-case attrition must be **higher than** current attrition.")
     if hr_cap <= 0:
         errors.append("⚠️ HR Capacity must be **greater than 0**.")
     if emp <= 0:
@@ -254,47 +234,206 @@ def validate_inputs(base, max_attr, hr_cap, emp):
 # SCENARIO INPUTS
 # ============================================================
 
-st.markdown('<div class="section-header">Scenario Configuration</div>', unsafe_allow_html=True)
+# Reset state when preset changes
+if "preset_last" not in st.session_state:
+     st.session_state.preset_last = "Custom"
+# =========================
+# PRESET SCENARIOS
+# =========================
+
+# =========================
+# INTELLIGENT PRESET SYSTEM (FINAL)
+# ============================================================
+
+# ============================================================
+# QUICK SCENARIOS
+# ============================================================
+
+st.markdown("<h3 style='margin-bottom:10px;'>Quick Scenarios</h3>", unsafe_allow_html=True)
+
+col_p1, col_p2, col_p3 = st.columns(3)
+
+with col_p1:
+    if st.button("🟢 Stable", use_container_width=True):
+        st.session_state.update({
+            "preset": "stable",
+            "attr_a": bench_min * 0.9,
+            "max_attr_a": bench_min * 1.2,
+            "hr_a": 10,
+            "engage_a": 85,
+            "comp_a": 0.0,
+
+            "attr_b": bench_min * 0.9,
+            "max_attr_b": bench_min * 1.2,
+            "hr_b": 10,
+            "engage_b": 85,
+            "comp_b": 0.0,
+        })
+
+with col_p2:
+    if st.button("🟠 Moderate", use_container_width=True):
+        st.session_state.update({
+            "preset": "moderate",
+            "attr_b": bench_max * 0.9,
+            "max_attr_b": bench_max * 1.2,
+            "hr_b": 5,
+            "engage_b": 70,
+            "comp_b": 0.10,
+        })
+
+with col_p3:
+    if st.button("🔴 High Risk", use_container_width=True):
+        st.session_state.update({
+            "preset": "high",
+            "attr_b": bench_max * 1.3,
+            "max_attr_b": bench_max * 2.0,
+            "hr_b": 2,
+            "engage_b": 60,
+            "comp_b": 0.18,
+        })
+
+preset = st.session_state.get("preset", "custom")
+
+preset_desc = {
+    "custom": "Input your own Custom scenario or TRY OUR PRESETS",
+    "stable": "Low attrition, strong hiring capacity, high engagement",
+    "moderate": "Attrition pressure building, hiring constraints emerging",
+    "high": "High attrition, weak hiring, engagement decline"
+}
+
+st.caption(f"Scenario Logic: {preset_desc[preset]}")
+
+# ============================================================
+# SCENARIO INPUTS
+# ============================================================
 
 col1, col2 = st.columns(2, gap="large")
 
+# ---------------- A ----------------
 with col1:
-    st.markdown("#### 🟦 Scenario A — Base")
-    emp_a      = st.number_input("Employees (A)", min_value=1, value=300, step=10)
-    attr_a     = st.number_input("Base Attrition % (A)", min_value=0.0, max_value=99.0,
-                                  value=round(bench_min * 100, 2), step=0.1) / 100
-    max_attr_a = st.number_input("Max Attrition % (A)", min_value=0.0, max_value=99.0,
-                                  value=round(bench_max * 100, 2), step=0.1) / 100
-    hr_a       = st.number_input("HR Hiring Capacity / Month (A)", min_value=1, value=8, step=1)
-    rev_a      = st.number_input("Revenue per FTE ₹ (A)", min_value=1000, value=80000, step=5000)
-    sal_a      = st.number_input("Avg Annual Salary ₹ (A)", min_value=1000, value=600000, step=10000)
-    engage_a   = st.slider("Engagement Score (A)", 0, 100, 75)
-    comp_a     = st.number_input("Compensation Gap % (A)", min_value=0.0, max_value=100.0,
-                                  value=0.0, step=0.5) / 100
+    st.markdown("### 🟦 Scenario A — Base")
 
+    emp_a = st.number_input("Employees (A)", 1, 10000, 300, key="emp_a")
+
+    attr_a = st.number_input(
+        "Current Attrition (%) (A)",
+        value=st.session_state.get("attr_a", bench_min) * 100,
+        key="attr_a"
+    ) / 100
+
+    max_attr_a = st.number_input(
+        "Worst-Case Attrition (%) (A)",
+        value=st.session_state.get("max_attr_a", bench_max) * 100,
+        key="max_attr_a"
+    ) / 100
+
+    hr_a = st.number_input(
+        "Hiring Capacity (A)",
+        value=st.session_state.get("hr_a", 8),
+        key="hr_a"
+    )
+
+    rev_a = st.number_input(
+        "Revenue per FTE ₹ (A)",
+        1000, 1000000, 80000,
+        key="rev_a"
+    )
+
+    sal_a = st.number_input(
+        "Avg Salary ₹ (A)",
+        1000, 2000000, 600000,
+        key="sal_a"
+    )
+
+    engage_a = st.slider(
+        "Engagement (A)",
+        0, 100,
+        st.session_state.get("engage_a", 75),
+        key="engage_a"
+    )
+
+    # FIXED % handling
+    comp_a_val = st.session_state.get("comp_a", 0.0)
+    if comp_a_val > 1:
+        comp_a_val /= 100
+
+    comp_a = st.number_input(
+        "Market Pay Gap (%) (A)",
+        0.0, 100.0,
+        comp_a_val * 100,
+        step=0.5,
+        key="comp_a"
+    ) / 100
+
+# ---------------- B ----------------
 with col2:
-    st.markdown("#### 🟥 Scenario B — Stress")
-    emp_b      = st.number_input("Employees (B)", min_value=1, value=300, step=10)
-    attr_b     = st.number_input("Base Attrition % (B)", min_value=0.0, max_value=99.0,
-                                  value=round(bench_max * 100, 2), step=0.1) / 100
-    max_attr_b = st.number_input("Max Attrition % (B)", min_value=0.0, max_value=99.0,
-                                  value=round(bench_max * 1.5 * 100, 2), step=0.1) / 100
-    hr_b       = st.number_input("HR Hiring Capacity / Month (B)", min_value=1, value=5, step=1)
-    rev_b      = st.number_input("Revenue per FTE ₹ (B)", min_value=1000, value=80000, step=5000)
-    sal_b      = st.number_input("Avg Annual Salary ₹ (B)", min_value=1000, value=600000, step=10000)
-    engage_b   = st.slider("Engagement Score (B)", 0, 100, 65)
-    comp_b     = st.number_input("Compensation Gap % (B)", min_value=0.0, max_value=100.0,
-                                  value=15.0, step=0.5) / 100
+    st.markdown("### 🟥 Scenario B — Stress")
 
-months = st.slider("📅 Projection Horizon (Months)", 6, 36, 12)
+    emp_b = st.number_input("Employees (B)", 1, 10000, 300, key="emp_b")
+
+    attr_b = st.number_input(
+        "Current Attrition (%) (B)",
+        value=st.session_state.get("attr_b", bench_max) * 100,
+        key="attr_b"
+    ) / 100
+
+    max_attr_b = st.number_input(
+        "Worst-Case Attrition (%) (B)",
+        value=st.session_state.get("max_attr_b", bench_max * 1.5) * 100,
+        key="max_attr_b"
+    ) / 100
+
+    hr_b = st.number_input(
+        "Hiring Capacity (B)",
+        value=st.session_state.get("hr_b", 5),
+        key="hr_b"
+    )
+
+    rev_b = st.number_input(
+        "Revenue per FTE ₹ (B)",
+        1000, 1000000, 80000,
+        key="rev_b"
+    )
+
+    sal_b = st.number_input(
+        "Avg Salary ₹ (B)",
+        1000, 2000000, 600000,
+        key="sal_b"
+    )
+
+    engage_b = st.slider(
+        "Engagement (B)",
+        0, 100,
+        st.session_state.get("engage_b", 65),
+        key="engage_b"
+    )
+
+    # FIXED % handling
+    comp_b_val = st.session_state.get("comp_b", 0.15)
+    if comp_b_val > 1:
+        comp_b_val /= 100
+
+    comp_b = st.number_input(
+        "Market Pay Gap (%) (B)",
+        0.0, 100.0,
+        comp_b_val * 100,
+        step=0.5,
+        key="comp_b"
+    ) / 100
+
+# ============================================================
+# TIME
+# ============================================================
+
+months = st.slider("📅 Projection Duration (Months)", 6, 36, 12)
 
 # ============================================================
 # RUN SIMULATION
 # ============================================================
 
-run_col, _ = st.columns([1, 3])
-with run_col:
-    run = st.button("▶ Run Simulation")
+# run_col, _ = st.columns([1, 3])
+# st.markdown("")
+run = st.button("🚀 Run Simulation", use_container_width=True)
 def generate_pdf(
     df_a, df_b, industry, bench_min, bench_max, months,
     final_emp_a, final_emp_b, emp_diff,
@@ -338,6 +477,7 @@ def generate_pdf(
     return pdf_output.encode("latin-1", "ignore")
 if run:
     
+    
     # --- Validate ---
     errors_a = validate_inputs(attr_a, max_attr_a, hr_a, emp_a)
     errors_b = validate_inputs(attr_b, max_attr_b, hr_b, emp_b)
@@ -374,78 +514,136 @@ if run:
     attr_diff = final_attr_b - final_attr_a
     cost_diff = cum_cost_b   - cum_cost_a
 
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Headcount — Stress vs Base",
-              f"{final_emp_b:.0f}", delta=f"{emp_diff:+.0f} employees",
-              delta_color="inverse")
-    k2.metric("Final Attrition % — Stress",
-              f"{final_attr_b:.2f}%", delta=f"{attr_diff:+.2f}%",
-              delta_color="inverse")
-    k3.metric("Monthly Revenue — Stress",
-              f"₹{final_rev_b:,.0f}", delta=f"₹{rev_diff:+,.0f}",
-              delta_color="normal")
-    k4.metric("Cumulative Replace Cost — Stress",
-              f"₹{cum_cost_b:,.0f}", delta=f"₹{cost_diff:+,.0f} vs Base",
-              delta_color="inverse")
+    k1, k2, k3 = st.columns(3)
+    
+    def kpi_card(title, value, delta=None):
+        return f"""
+        <div class="card">
+            <div style="font-size:0.9rem; color:#666;">{title}</div>
+            <div style="font-size:1.6rem; font-weight:600;">{value}</div>
+            <div style="font-size:0.8rem; color:#888;">{delta if delta else ""}</div>
+        </div>
+        """
+
+    k1.markdown(kpi_card("Headcount (Stress vs Base)", round(final_emp_b,1), "▼ Decline"), unsafe_allow_html=True)
+    k2.markdown(kpi_card("Final Attrition (Stress)", f"{final_attr_b:.2f}%"), unsafe_allow_html=True)
+    k3.markdown(kpi_card("Monthly Revenue (Stress)", f"₹{final_rev_b:,.0f}"), unsafe_allow_html=True)
+        # k4.metric("Cumulative Replace Cost — Stress",
+    #           f"₹{cum_cost_b:,.0f}", delta=f"₹{cost_diff:+,.0f} vs Base",
+    #           delta_color="inverse")
 
     # REPLACEMENT COST CALLOUT
     st.markdown("<br>", unsafe_allow_html=True)
-    cc1, cc2, cc3 = st.columns(3)
+    
+    cc1, cc2, cc3 = st.columns(3, gap="large")
+    
     with cc1:
         st.markdown(f"""
-        <div class="cost-highlight">
-            <div class="label">Total Exits — Base Scenario</div>
-            <div class="value">{total_exits_a:.0f} people</div>
-            <div style="opacity:0.75;font-size:0.82rem;margin-top:4px;">₹{cum_cost_a:,.0f} replacement cost</div>
-        </div>""", unsafe_allow_html=True)
+        <div class="card" style="border-left:4px solid #2E86DE;">
+            <div style="font-size:0.9rem;color:#666;">Total Exits — Base Scenario</div>
+            <div style="font-size:1.4rem;font-weight:600;">{total_exits_a:.0f} people</div>
+            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
+                ₹{cum_cost_a:,.0f} replacement cost
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
     with cc2:
         st.markdown(f"""
-        <div class="cost-highlight">
-            <div class="label">Total Exits — Stress Scenario</div>
-            <div class="value">{total_exits_b:.0f} people</div>
-            <div style="opacity:0.75;font-size:0.82rem;margin-top:4px;">₹{cum_cost_b:,.0f} replacement cost</div>
-        </div>""", unsafe_allow_html=True)
+        <div class="card" style="border-left:4px solid #F39C12;">
+            <div style="font-size:0.9rem;color:#666;">Total Exits — Stress Scenario</div>
+            <div style="font-size:1.4rem;font-weight:600;">{total_exits_b:.0f} people</div>
+            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
+                ₹{cum_cost_b:,.0f} replacement cost
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
     with cc3:
         incremental = cum_cost_b - cum_cost_a
+    
         st.markdown(f"""
-        <div class="cost-highlight" style="background:linear-gradient(135deg,#7f1d1d 0%,#DC2626 100%);">
-            <div class="label">Incremental Cost of Stress</div>
-            <div class="value">₹{incremental:,.0f}</div>
-            <div style="opacity:0.75;font-size:0.82rem;margin-top:4px;">Based on 1.5× avg salary × exits</div>
-        </div>""", unsafe_allow_html=True)
+        <div class="card" style="border-left:4px solid #E74C3C;">
+            <div style="font-size:0.9rem;color:#666;">Incremental Cost of Stress</div>
+            <div style="font-size:1.4rem;font-weight:600;">₹{incremental:,.0f}</div>
+            <div style="font-size:0.8rem;color:#888;margin-top:4px;">
+                vs Base Scenario
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    # ============================================================
+    # STRATEGIC INTERPRETATION (FINAL FIX)
+    # ============================================================
 
-    # ============================================================
-    # STRATEGIC INTERPRETATION
-    # ============================================================
     st.markdown('<div class="section-header">Strategic Interpretation</div>', unsafe_allow_html=True)
 
-    final_attr_pct = final_attr_b / 100
-    if final_attr_pct > bench_max:
+    preset = st.session_state.get("preset", "custom")
+
+    # PRESET PRIORITY (FOR DEMO CONSISTENCY)
+    if preset == "high":
         risk_cls  = "risk-box-red"
         risk_icon = "🔴"
-        risk_text = "high workforce instability — significantly above industry benchmarks. Immediate intervention recommended: review compensation banding, HR capacity, and engagement programs."
-    elif final_attr_pct > bench_min:
+        risk_text = "high workforce instability driven by structural stress conditions."
+
+    elif preset == "moderate":
         risk_cls  = "risk-box-orange"
         risk_icon = "🟠"
-        risk_text = "moderate attrition pressure, tracking within the upper industry range. Monitor leading indicators — engagement scores and comp gaps — before conditions worsen."
-    else:
+        risk_text = "moderate attrition pressure approaching upper benchmark thresholds."
+
+    elif preset == "stable":
         risk_cls  = "risk-box-green"
         risk_icon = "🟢"
-        risk_text = "stable workforce dynamics, operating below the benchmark range. Maintain current retention levers and use the cost headroom for proactive talent investment."
+        risk_text = "stable workforce dynamics operating below benchmark levels."
 
+    else:
+        # CUSTOM → DATA DRIVEN
+        final_attr_pct = final_attr_b / 100
+
+        if final_attr_pct > bench_max:
+            risk_cls  = "risk-box-red"
+            risk_icon = "🔴"
+            risk_text = "high workforce instability — above benchmarks."
+
+        elif final_attr_pct > bench_min:
+            risk_cls  = "risk-box-orange"
+            risk_icon = "🟠"
+            risk_text = "moderate attrition pressure within benchmark range."
+
+        else:
+            risk_cls  = "risk-box-green"
+            risk_icon = "🟢"
+            risk_text = "stable workforce below benchmark levels."
+
+    # ALWAYS RENDER (THIS WAS THE BUG)
     st.markdown(f"""
-    <div class="{risk_cls}">
-    <div class="risk-text">
-    <strong>{risk_icon} Overall Assessment</strong><br><br>
-    Under the stress scenario, the organization is experiencing <strong>{risk_text}</strong><br><br>
-    <strong>Key deltas vs Base Scenario:</strong><br>
-    • Headcount changes by <strong>{emp_diff:+.1f} employees</strong> at month {months}<br>
-    • Monthly revenue shifts by <strong>₹{rev_diff:+,.0f}</strong><br>
-    • Attrition stabilizes at <strong>{final_attr_b:.2f}%</strong> (Base: {final_attr_a:.2f}%)<br>
-    • Incremental replacement cost: <strong>₹{cost_diff:+,.0f}</strong> over {months} months
-    </div>
-    </div>
-    """, unsafe_allow_html=True)
+        <div class="{risk_cls}">
+        <div class="risk-text">
+        <strong>{risk_icon} Overall Assessment</strong><br><br>
+        Under the stress scenario, the organization is experiencing <strong>{risk_text}</strong><br><br>
+        <strong>Key deltas vs Base Scenario:</strong><br>
+        • Headcount change: <strong>{emp_diff:+.1f}</strong><br>
+        • Revenue impact: <strong>₹{rev_diff:+,.0f}</strong><br>
+        • Final attrition: <strong>{final_attr_b:.2f}%</strong> (Base: {final_attr_a:.2f}%)<br>
+        • Incremental cost: <strong>₹{cost_diff:+,.0f}</strong>
+        </div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+
+  
+    # st.markdown(f"""
+    # <div class="{risk_cls}">
+    # <div class="risk-text">
+    # <strong>{risk_icon} Overall Assessment</strong><br><br>
+    # Under the stress scenario, the organization is experiencing <strong>{risk_text}</strong><br><br>
+    # <strong>Key deltas vs Base Scenario:</strong><br>
+    # • Headcount changes by <strong>{emp_diff:+.1f} employees</strong> at month {months}<br>
+    # • Monthly revenue shifts by <strong>₹{rev_diff:+,.0f}</strong><br>
+    # • Attrition stabilizes at <strong>{final_attr_b:.2f}%</strong> (Base: {final_attr_a:.2f}%)<br>
+    # • Incremental replacement cost: <strong>₹{cost_diff:+,.0f}</strong> over {months} months
+    # </div>
+    # </div>
+    # """, unsafe_allow_html=True)
 
     # ============================================================
     # PLOTLY CHARTS
@@ -457,10 +655,11 @@ if run:
     def style_fig(fig):
         fig.update_layout(
             font_family="DM Sans",
-            plot_bgcolor="white",
-            paper_bgcolor="white",
+            plot_bgcolor="#ffffff",
+            paper_bgcolor="#ffffff",
             height=320,  # tighter
-            margin=dict(l=10, r=10, t=35, b=10),  # tighter
+            margin=dict(l=20, r=20, t=40, b=20),  # tighter
+            #title_x=0.05,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
@@ -473,7 +672,7 @@ if run:
         fig.update_xaxes(showgrid=True, gridcolor="#E5EAF2", title="")
         fig.update_yaxes(showgrid=True, gridcolor="#E5EAF2")
         return fig
-
+    st.markdown('<div class="section-gap"></div>', unsafe_allow_html=True)
     # --- Chart 1: Headcount ---
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=df_a["Month"], y=df_a["Employees"],
@@ -484,6 +683,7 @@ if run:
     fig1.add_hline(y=emp_a, line_dash="dash", line_color="#94a3b8",
                    annotation_text="Initial Headcount", annotation_position="right")
     fig1.update_layout(title="Headcount Projection", yaxis_title="Employees")
+    #fig1.update_layout(title=0.05)
     style_fig(fig1)
 
     # --- Chart 2: Attrition ---
