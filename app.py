@@ -194,97 +194,97 @@ INDUSTRY_PRESETS = {
 
 "IT / ITES": {
     "stable":{
-        "attr_b":0.008,
-        "max_attr_b":0.014,
+        "attr_b":0.8,
+        "max_attr_b":1.4,
         "hr_b":10,
         "engage_b":85,
-        "comp_b":0.00
+        "comp_b":0
     },
     "moderate":{
-        "attr_b":0.018,
-        "max_attr_b":0.025,
+        "attr_b":1.8,
+        "max_attr_b":2.5,
         "hr_b":5,
         "engage_b":70,
-        "comp_b":0.10
+        "comp_b":10
     },
     "high":{
-        "attr_b":0.025,
-        "max_attr_b":0.040,
+        "attr_b":2.5,
+        "max_attr_b":4.0,
         "hr_b":2,
         "engage_b":58,
-        "comp_b":0.18
+        "comp_b":18
     }
 },
 
 "Manufacturing": {
     "stable":{
-        "attr_b":0.006,
-        "max_attr_b":0.009,
+        "attr_b":0.6,
+        "max_attr_b":0.9,
         "hr_b":6,
         "engage_b":82,
-        "comp_b":0.02
+        "comp_b":2
     },
     "moderate":{
-        "attr_b":0.010,
-        "max_attr_b":0.014,
+        "attr_b":1.0,
+        "max_attr_b":1.4,
         "hr_b":4,
         "engage_b":68,
-        "comp_b":0.08
+        "comp_b":8
     },
     "high":{
-        "attr_b":0.018,
-        "max_attr_b":0.035,
+        "attr_b":1.8,
+        "max_attr_b":3.5,
         "hr_b":2,
         "engage_b":55,
-        "comp_b":0.15
+        "comp_b":15
     }
 },
 
 "Banking / Financial Services": {
     "stable":{
-        "attr_b":0.008,
-        "max_attr_b":0.011,
+        "attr_b":0.8,
+        "max_attr_b":1.1,
         "hr_b":7,
         "engage_b":80,
-        "comp_b":0.03
+        "comp_b":3
     },
     "moderate":{
-        "attr_b":0.013,
-        "max_attr_b":0.018,
+        "attr_b":1.3,
+        "max_attr_b":1.8,
         "hr_b":4,
         "engage_b":67,
-        "comp_b":0.09
+        "comp_b":9
     },
     "high":{
-        "attr_b":0.022,
-        "max_attr_b":0.030,
+        "attr_b":2.2,
+        "max_attr_b":3.0,
         "hr_b":2,
         "engage_b":52,
-        "comp_b":0.16
+        "comp_b":16
     }
 },
 
 "Healthcare": {
     "stable":{
-        "attr_b":0.009,
-        "max_attr_b":0.013,
+        "attr_b":0.9,
+        "max_attr_b":1.3,
         "hr_b":8,
         "engage_b":81,
-        "comp_b":0.03
+        "comp_b":3
     },
     "moderate":{
-        "attr_b":0.015,
-        "max_attr_b":0.021,
+        "attr_b":1.5,
+        "max_attr_b":2.1,
         "hr_b":5,
         "engage_b":66,
-        "comp_b":0.09
+        "comp_b":9
     },
     "high":{
-        "attr_b":0.024,
-        "max_attr_b":0.04,
+        "attr_b":2.4,
+        "max_attr_b":4.0,
         "hr_b":2,
         "engage_b":50,
-        "comp_b":0.17
+        "comp_b":17
     }
 }
 
@@ -464,28 +464,28 @@ preset_pack = INDUSTRY_PRESETS[industry]
 with col_p1:
     if st.button("🟢 Normal Operating State", use_container_width=True):
 
-        st.session_state.update(
-            {"preset":"stable"} |
-            preset_pack["stable"]
-        )
+        st.session_state.update({
+        "preset":"stable",
+        **preset_pack["stable"]
+        })
 
 
 with col_p2:
     if st.button("🟠 Emerging Stress", use_container_width=True):
 
-        st.session_state.update(
-            {"preset":"moderate"} |
-            preset_pack["moderate"]
-        )
+        st.session_state.update({
+        "preset":"moderate",
+        **preset_pack["moderate"]
+        })
 
 
 with col_p3:
     if st.button("🔴 Structural Risk", use_container_width=True):
 
-        st.session_state.update(
-            {"preset":"high"} |
-            preset_pack["high"]
-        )
+        st.session_state.update({
+        "preset":"high",
+        **preset_pack["high"]
+        })
 preset = st.session_state.get("preset", "custom")
 
 preset_desc = {
@@ -509,17 +509,29 @@ with col1:
 
     emp_a = st.number_input("Employees (A)", 1, 10000, 300, key="emp_a")
 
+    attr_a_default = float(st.session_state.get("attr_a", bench_min*100))
+    max_attr_a_default = float(st.session_state.get("max_attr_a", bench_max*100))
+    
     attr_a = st.number_input(
-        "Current Attrition (%) (A)",
-        value=st.session_state.get("attr_a", bench_min) * 100,
+        "Current Attrition (% monthly — enter 2 for 2%)",
+        min_value=0.1,
+        max_value=20.0,
+        value=attr_a_default,
+        step=0.1,
         key="attr_a"
-    ) / 100
-
+    )/100
+    
     max_attr_a = st.number_input(
-        "Worst-Case Attrition (%) (A)",
-        value=st.session_state.get("max_attr_a", bench_max) * 100,
+        "Worst-Case Attrition (% monthly)",
+        min_value=0.1,
+        max_value=30.0,
+        value=max(
+            max_attr_a_default,
+            attr_a_default+0.1
+        ),
+        step=0.1,
         key="max_attr_a"
-    ) / 100
+    )/100
 
     hr_a = st.number_input(
         "Hiring Capacity (A)",
@@ -547,17 +559,16 @@ with col1:
     )
 
     # FIXED % handling
-    comp_a_val = st.session_state.get("comp_a", 0.0)
-    if comp_a_val > 1:
-        comp_a_val /= 100
-
+    comp_a_val = float(st.session_state.get("comp_a",0))
+    
     comp_a = st.number_input(
         "Market Pay Gap (%) (A)",
-        0.0, 100.0,
-        comp_a_val * 100,
+        min_value=0.0,
+        max_value=100.0,
+        value=comp_a_val,
         step=0.5,
         key="comp_a"
-    ) / 100
+    )/100
 
 # ---------------- B ----------------
 with col2:
@@ -565,17 +576,29 @@ with col2:
 
     emp_b = st.number_input("Employees (B)", 1, 10000, 300, key="emp_b")
 
+    attr_b_default = float(st.session_state.get("attr_b", bench_max*100))
+    max_attr_b_default = float(st.session_state.get("max_attr_b", bench_max*150))
+    
     attr_b = st.number_input(
-        "Current Attrition (%) (B)",
-        value=st.session_state.get("attr_b", bench_max) * 100,
+        "Current Attrition (% monthly — enter 2 for 2%)",
+        min_value=0.1,
+        max_value=20.0,
+        value=attr_b_default,
+        step=0.1,
         key="attr_b"
-    ) / 100
-
+    )/100
+    
     max_attr_b = st.number_input(
-        "Worst-Case Attrition (%) (B)",
-        value=st.session_state.get("max_attr_b", bench_max * 1.5) * 100,
+        "Worst-Case Attrition (% monthly)",
+        min_value=0.1,
+        max_value=30.0,
+        value=max(
+            max_attr_b_default,
+            attr_b_default+0.1
+        ),
+        step=0.1,
         key="max_attr_b"
-    ) / 100
+    )/100
 
     hr_b = st.number_input(
         "Hiring Capacity (B)",
@@ -603,17 +626,16 @@ with col2:
     )
 
     # FIXED % handling
-    comp_b_val = st.session_state.get("comp_b", 0.15)
-    if comp_b_val > 1:
-        comp_b_val /= 100
-
+    comp_b_val = float(st.session_state.get("comp_b",15))
+    
     comp_b = st.number_input(
         "Market Pay Gap (%) (B)",
-        0.0, 100.0,
-        comp_b_val * 100,
+        min_value=0.0,
+        max_value=100.0,
+        value=comp_b_val,
         step=0.5,
         key="comp_b"
-    ) / 100
+    )/100
 # ===============================
 # SHOCK OVERLAY ENGINE (SAFE)
 # ===============================
@@ -633,9 +655,9 @@ if shock_choice != "None":
     sim_attr_b = attr_b * shock["attr_b_mult"]
 
     # keep logic valid automatically
-    if sim_attr_b >= max_attr_b:
+    if sim_attr_b >= sim_max_b:
             sim_max_b = min(
-    0.06,
+    0.08,
     sim_attr_b*1.15
     )   # auto expand worst-case ceiling
 
@@ -758,8 +780,53 @@ if run:
     rev_diff  = final_rev_b  - final_rev_a
     attr_diff = final_attr_b - final_attr_a
     cost_diff = cum_cost_b   - cum_cost_a
-
-    k1, k2, k3 = st.columns(3)
+    
+    # =====================================
+    # Benchmark Breach Probability
+    # =====================================
+    
+    final_attr_pct = final_attr_b/100
+    
+    breach_ratio = final_attr_pct / bench_max
+    
+    engagement_risk = max(
+        0,
+        (70 - df_b["Engagement"].iloc[-1]) / 30
+    )
+    
+    hiring_risk = max(
+        0,
+        1 - (sim_hr_b / max(hr_a,1))
+    )
+    
+    pay_risk = min(
+        sim_comp_b / 0.20,
+        1
+    )
+    
+    breach_prob = (
+        0.50 * min(breach_ratio,1.5)
+      + 0.20 * engagement_risk
+      + 0.20 * hiring_risk
+      + 0.10 * pay_risk
+    )
+    
+    breach_prob = min(
+        95,
+        max(
+            0,
+            breach_prob * 100
+        )
+    )
+    
+    if breach_prob >=70:
+        breach_signal = "▲ High"
+    elif breach_prob >=40:
+        breach_signal = "● Moderate"
+    else:
+        breach_signal = "✓ Low"
+    
+    k1, k2, k3, k4 = st.columns(4)
     
     def kpi_card(title, value, delta=None):
         return f"""
@@ -770,12 +837,30 @@ if run:
         </div>
         """
 
-    k1.markdown(kpi_card("Headcount (Stress vs Base)", round(final_emp_b,1), "▼ Decline"), unsafe_allow_html=True)
+    headcount_delta = (
+    "▲ Growth" if emp_diff > 0
+    else "▼ Decline" if emp_diff < 0
+    else "■ Flat"
+    )
+    
+    k1.markdown(
+    kpi_card(
+    "Headcount (Stress vs Base)",
+    round(final_emp_b,1),
+    headcount_delta
+    ),
+    unsafe_allow_html=True
+    )
     k2.markdown(kpi_card("Final Attrition (Stress)", f"{final_attr_b:.2f}%"), unsafe_allow_html=True)
     k3.markdown(kpi_card("Monthly Revenue (Stress)", f"₹{final_rev_b:,.0f}"), unsafe_allow_html=True)
-        # k4.metric("Cumulative Replace Cost — Stress",
-    #           f"₹{cum_cost_b:,.0f}", delta=f"₹{cost_diff:+,.0f} vs Base",
-    #           delta_color="inverse")
+    k4.markdown(
+    kpi_card(
+        "Benchmark Breach Probability",
+        f"{breach_prob:.0f}%",
+        breach_signal
+    ),
+unsafe_allow_html=True
+)
 
     # REPLACEMENT COST CALLOUT
     st.markdown("<br>", unsafe_allow_html=True)
@@ -857,68 +942,104 @@ if run:
     # DATA-DRIVEN RISK ENGINE (Replaces preset-driven logic)
     # ==========================================================
     
-    final_attr_pct = final_attr_b / 100
+    # =====================================
+    # Workforce Risk Index v3 (better calibration)
+    # =====================================
     
-    # Risk index (0-100)
-    attrition_score = min(40,max(0,
-        ((final_attr_pct - bench_min) /
-        (max(bench_max-bench_min,0.0001))) * 40
-        )
-        )
+    final_attr_pct = final_attr_b/100
+    attrition_ratio = final_attr_pct/bench_max
     
-    engagement_score = max(
-        0,
-        min(25, ((70 - df_b["Engagement"].iloc[-1]) / 30) * 25)
+    
+    # 1 Attrition breach severity (0-45)
+    if attrition_ratio <=0.8:
+        attrition_score=5
+    elif attrition_ratio<=1.0:
+        attrition_score=15
+    elif attrition_ratio<=1.2:
+        attrition_score=28
+    elif attrition_ratio<=1.5:
+        attrition_score=38
+    else:
+        attrition_score=50
+    
+    
+    # 2 Engagement (0-25)
+    engagement_final=df_b["Engagement"].iloc[-1]
+    
+    if engagement_final>=80:
+        engagement_score=0
+    elif engagement_final>=70:
+        engagement_score=8
+    elif engagement_final>=60:
+        engagement_score=16
+    else:
+        engagement_score=25
+    
+    
+    # 3 Hiring capacity strain (0-20)
+    peak_exits = df_b["Monthly Exits"].max()
+    hiring_ratio = sim_hr_b / max(peak_exits,1)
+    
+    if hiring_ratio>=1.0:
+        hiring_score=0
+    elif hiring_ratio>=0.8:
+        hiring_score=6
+    elif hiring_ratio>=0.6:
+        hiring_score=12
+    else:
+        hiring_score=20
+    
+    
+    # 4 Compensation pressure (0-10)
+    if sim_comp_b<=0.03:
+        comp_score=0
+    elif sim_comp_b<=0.08:
+        comp_score=4
+    elif sim_comp_b<=0.15:
+        comp_score=7
+    else:
+        comp_score=10
+    
+    
+    # 5 Shock premium (0-15)
+    shock_score=0
+    
+    if shock_choice=="Burnout Wave":
+        shock_score=9
+    elif shock_choice=="Hiring Freeze Shock":
+        shock_score=12
+    elif shock_choice=="Compensation Compression":
+        shock_score=8
+    elif shock_choice=="Hypergrowth Attrition":
+        shock_score=15
+    
+    
+    risk_index=(
+    attrition_score+
+    engagement_score+
+    hiring_score+
+    comp_score+
+    shock_score
     )
     
-    hiring_gap_ratio = max(
-        0,
-        1 - (sim_hr_b / max(hr_a,1))
-    )
+    # Risk classification
+    if risk_index >=45:
+        risk_cls="risk-box-red"
+        risk_icon="🔴"
+        risk_text=f"high workforce instability (Risk Index: {risk_index}/100)."
     
-    hiring_score = min(
-        20,
-        hiring_gap_ratio * 20
-    )
-    
-    cost_score = min(
-        15,
-        max(0,cost_diff/cum_cost_a)*15 if cum_cost_a>0 else 0
-    )
-    
-    risk_index = (
-        attrition_score +
-        engagement_score +
-        hiring_score +
-        cost_score
-    )
-    
-    # Risk Classification
-    if risk_index >= 65:
-        risk_cls = "risk-box-red"
-        risk_icon = "🔴"
-        risk_text = (
-            f"high workforce instability "
-            f"(Risk Index: {risk_index:.0f}/100)."
-        )
-    
-    elif risk_index >= 40:
-        risk_cls = "risk-box-orange"
-        risk_icon = "🟠"
-        risk_text = (
-            f"moderate workforce risk pressure "
-            f"(Risk Index: {risk_index:.0f}/100)."
-        )
+    elif risk_index >=20:
+        risk_cls="risk-box-orange"
+        risk_icon="🟠"
+        risk_text=f"moderate workforce risk pressure (Risk Index: {risk_index}/100)."
     
     else:
-        risk_cls = "risk-box-green"
-        risk_icon = "🟢"
-        risk_text = (
-            f"stable workforce outlook "
-            f"(Risk Index: {risk_index:.0f}/100)."
-        )
-
-    # ALWAYS RENDER (THIS WAS THE BUG)
+        risk_cls="risk-box-green"
+        risk_icon="🟢"
+        risk_text=f"stable workforce outlook (Risk Index: {risk_index}/100)."
+        
+    # -------- MOVE THIS OUTSIDE THE IF BLOCK --------
+    
     st.markdown(f"""
     <div class="{risk_cls}">
     <strong>{risk_icon} Overall Assessment</strong><br><br>
@@ -936,23 +1057,8 @@ if run:
     
     </div>
     """, unsafe_allow_html=True)
-    
 
   
-    # st.markdown(f"""
-    # <div class="{risk_cls}">
-    # <div class="risk-text">
-    # <strong>{risk_icon} Overall Assessment</strong><br><br>
-    # Under the stress scenario, the organization is experiencing <strong>{risk_text}</strong><br><br>
-    # <strong>Key deltas vs Base Scenario:</strong><br>
-    # • Headcount changes by <strong>{emp_diff:+.1f} employees</strong> at month {months}<br>
-    # • Monthly revenue shifts by <strong>₹{rev_diff:+,.0f}</strong><br>
-    # • Attrition stabilizes at <strong>{final_attr_b:.2f}%</strong> (Base: {final_attr_a:.2f}%)<br>
-    # • Incremental replacement cost: <strong>₹{cost_diff:+,.0f}</strong> over {months} months
-    # </div>
-    # </div>
-    # """, unsafe_allow_html=True)
-
     # ============================================================
     # PLOTLY CHARTS
     # ============================================================
