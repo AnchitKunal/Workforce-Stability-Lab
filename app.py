@@ -113,7 +113,9 @@ with col_ind:
         "🏭 Industry Benchmark",
         list(industry_benchmarks.keys())
     )
-
+# active benchmark values
+bench_min = industry_benchmarks[industry]["min"]
+bench_max = industry_benchmarks[industry]["max"]
 
 with col_bench:
     st.markdown(f"""
@@ -132,8 +134,7 @@ with col_bench:
     </div>
     """, unsafe_allow_html=True)
 # Active benchmark values (used across presets + simulation)
-bench_min = industry_benchmarks[industry]["min"]
-bench_max = industry_benchmarks[industry]["max"]
+
 INDUSTRY_PRESETS = {
 
 "IT / ITES": {
