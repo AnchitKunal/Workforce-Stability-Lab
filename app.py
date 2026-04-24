@@ -794,11 +794,12 @@ if run:
         (70 - df_b["Engagement"].iloc[-1]) / 30
     )
     
-    hiring_risk = max(
-        0,
-        1 - (sim_hr_b / max(hr_a,1))
-    )
+    peak_exits_prob = df_b["Monthly Exits"].max()
     
+    hiring_risk=max(
+    0,
+    1-(sim_hr_b/max(peak_exits_prob,1))
+    )
     pay_risk = min(
         sim_comp_b / 0.20,
         1
