@@ -113,9 +113,7 @@ with col_ind:
         "🏭 Industry Benchmark",
         list(industry_benchmarks.keys())
     )
-# active benchmark values
-bench_min = industry_benchmarks[industry]["min"]
-bench_max = industry_benchmarks[industry]["max"]
+
 
 with col_bench:
     st.markdown(f"""
@@ -136,7 +134,105 @@ with col_bench:
 # Active benchmark values (used across presets + simulation)
 bench_min = industry_benchmarks[industry]["min"]
 bench_max = industry_benchmarks[industry]["max"]
+INDUSTRY_PRESETS = {
 
+"IT / ITES": {
+    "stable": {
+        "attr_b":0.008,
+        "max_attr_b":0.014,
+        "hr_b":10,
+        "engage_b":85,
+        "comp_b":0.00
+    },
+    "moderate":{
+        "attr_b":0.018,
+        "max_attr_b":0.025,
+        "hr_b":5,
+        "engage_b":70,
+        "comp_b":0.10
+    },
+    "high":{
+        "attr_b":0.028,
+        "max_attr_b":0.035,
+        "hr_b":2,
+        "engage_b":58,
+        "comp_b":0.18
+    }
+},
+
+"Manufacturing": {
+    "stable":{
+        "attr_b":0.006,
+        "max_attr_b":0.009,
+        "hr_b":6,
+        "engage_b":82,
+        "comp_b":0.02
+    },
+    "moderate":{
+        "attr_b":0.010,
+        "max_attr_b":0.014,
+        "hr_b":4,
+        "engage_b":68,
+        "comp_b":0.08
+    },
+    "high":{
+        "attr_b":0.018,
+        "max_attr_b":0.025,
+        "hr_b":2,
+        "engage_b":55,
+        "comp_b":0.15
+    }
+},
+
+"Banking / Financial Services": {
+    "stable":{
+        "attr_b":0.008,
+        "max_attr_b":0.011,
+        "hr_b":7,
+        "engage_b":80,
+        "comp_b":0.03
+    },
+    "moderate":{
+        "attr_b":0.013,
+        "max_attr_b":0.018,
+        "hr_b":4,
+        "engage_b":67,
+        "comp_b":0.09
+    },
+    "high":{
+        "attr_b":0.022,
+        "max_attr_b":0.030,
+        "hr_b":2,
+        "engage_b":52,
+        "comp_b":0.16
+    }
+},
+
+"Healthcare": {
+    "stable":{
+        "attr_b":0.009,
+        "max_attr_b":0.013,
+        "hr_b":8,
+        "engage_b":81,
+        "comp_b":0.03
+    },
+    "moderate":{
+        "attr_b":0.015,
+        "max_attr_b":0.021,
+        "hr_b":5,
+        "engage_b":66,
+        "comp_b":0.09
+    },
+    "high":{
+        "attr_b":0.024,
+        "max_attr_b":0.032,
+        "hr_b":2,
+        "engage_b":50,
+        "comp_b":0.17
+    }
+}
+
+}
 # ============================================================
 # SIMULATION ENGINE
 # ============================================================
@@ -261,52 +357,40 @@ st.markdown("<h3 style='margin-bottom:10px;'>Quick Scenarios</h3>", unsafe_allow
 
 col_p1, col_p2, col_p3 = st.columns(3)
 
+preset_pack = INDUSTRY_PRESETS[industry]
+
 with col_p1:
     if st.button("🟢 Stable", use_container_width=True):
-        st.session_state.update({
-            "preset": "stable",
-            "attr_a": bench_min * 0.9,
-            "max_attr_a": bench_min * 1.2,
-            "hr_a": 10,
-            "engage_a": 85,
-            "comp_a": 0.0,
 
-            "attr_b": bench_min * 0.9,
-            "max_attr_b": bench_min * 1.2,
-            "hr_b": 10,
-            "engage_b": 85,
-            "comp_b": 0.0,
-        })
+        st.session_state.update(
+            {"preset":"stable"} |
+            preset_pack["stable"]
+        )
+
 
 with col_p2:
     if st.button("🟠 Moderate", use_container_width=True):
-        st.session_state.update({
-            "preset": "moderate",
-            "attr_b": bench_max * 0.9,
-            "max_attr_b": bench_max * 1.2,
-            "hr_b": 5,
-            "engage_b": 70,
-            "comp_b": 0.10,
-        })
+
+        st.session_state.update(
+            {"preset":"moderate"} |
+            preset_pack["moderate"]
+        )
+
 
 with col_p3:
     if st.button("🔴 High Risk", use_container_width=True):
-        st.session_state.update({
-            "preset": "high",
-            "attr_b": bench_max * 1.3,
-            "max_attr_b": bench_max * 2.0,
-            "hr_b": 2,
-            "engage_b": 60,
-            "comp_b": 0.18,
-        })
 
+        st.session_state.update(
+            {"preset":"high"} |
+            preset_pack["high"]
+        )
 preset = st.session_state.get("preset", "custom")
 
 preset_desc = {
-    "custom": "Input your own Custom scenario or TRY OUR PRESETS",
-    "stable": "Low attrition, strong hiring capacity, high engagement",
-    "moderate": "Attrition pressure building, hiring constraints emerging",
-    "high": "High attrition, weak hiring, engagement decline"
+    "custom":"Input your own Custom scenario",
+    "stable":f"{industry}: controlled workforce conditions",
+    "moderate":f"{industry}: benchmark stress emerging",
+    "high":f"{industry}: severe workforce instability"
 }
 
 st.caption(f"Scenario Logic: {preset_desc[preset]}")
