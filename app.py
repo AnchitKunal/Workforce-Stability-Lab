@@ -307,7 +307,7 @@ SHOCK_SCENARIOS = {
 
 "Burnout Wave":{
     "hr_b_mult":0.8,
-    "attr_b_mult":1.35,
+    "attr_b_mult":1.15,
     "engage_delta":-15,
     "comp_gap_add":0.00
 },
@@ -365,7 +365,14 @@ def simulate_workforce(
         bucket_2    *= (1 - exit_ratio)
         bucket_3    *= (1 - exit_ratio)
 
-        fill_rate = 0.72
+        fill_rate_map = {
+        "IT / ITES":0.68,
+        "Manufacturing":0.82,
+        "Banking / Financial Services":0.75,
+        "Healthcare":0.70
+        }
+        
+        fill_rate = fill_rate_map[industry]
         hires = min(hr_capacity, exits * fill_rate)
 
         fully_productive_from_ramp = bucket_3
@@ -440,9 +447,6 @@ def validate_inputs(base, max_attr, hr_cap, emp):
 # SCENARIO INPUTS
 # ============================================================
 
-# Reset state when preset changes
-if "preset_last" not in st.session_state:
-     st.session_state.preset_last = "Custom"
 
 st.markdown("### Scenario Shock Library")
 
@@ -458,7 +462,7 @@ col_p1, col_p2, col_p3 = st.columns(3)
 preset_pack = INDUSTRY_PRESETS[industry]
 
 with col_p1:
-    if st.button("🟢 Stable", use_container_width=True):
+    if st.button("🟢 Normal Operating State", use_container_width=True):
 
         st.session_state.update(
             {"preset":"stable"} |
@@ -467,7 +471,7 @@ with col_p1:
 
 
 with col_p2:
-    if st.button("🟠 Moderate", use_container_width=True):
+    if st.button("🟠 Emerging Stress", use_container_width=True):
 
         st.session_state.update(
             {"preset":"moderate"} |
@@ -476,7 +480,7 @@ with col_p2:
 
 
 with col_p3:
-    if st.button("🔴 High Risk", use_container_width=True):
+    if st.button("🔴 Structural Risk", use_container_width=True):
 
         st.session_state.update(
             {"preset":"high"} |
@@ -815,13 +819,7 @@ if run:
         </div>
         """, unsafe_allow_html=True)
         
-    def short_money(x):
-        if x >= 10000000:
-            return f"₹{x/10000000:.2f} Cr"
-        elif x >= 100000:
-            return f"₹{x/100000:.1f} Lakh"
-        else:
-            return f"₹{x:,.0f}"
+    
         
     with cc3:
         incremental = cum_cost_b - cum_cost_a
