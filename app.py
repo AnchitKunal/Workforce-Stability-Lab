@@ -113,16 +113,24 @@ with col_ind:
         "🏭 Industry Benchmark",
         list(industry_benchmarks.keys())
     )
+# active benchmark values
+bench_min = industry_benchmarks[industry]["min"]
+bench_max = industry_benchmarks[industry]["max"]
+
 with col_bench:
-    st.markdown("""
-    <div class="card" style="
+    st.markdown(f"""
+    <div style="
         margin-top:28px;
-        padding:18px;
+        padding:18px 24px;
+        border-radius:14px;
         background:#EEF5FF;
-        border-left:4px solid #2E86DE;">
-        <strong>IT / ITES</strong> Monthly attrition benchmark:
-        <strong>0.8%–2.1%</strong>
-        (≈10%–25% annually)
+        border-left:6px solid #2E86DE;
+        font-size:1.05rem;
+        box-shadow:0 4px 12px rgba(0,0,0,0.04);
+    ">
+        <strong>{industry}</strong> Monthly attrition benchmark:
+        <strong>{bench_min*100:.1f}%–{bench_max*100:.2f}%</strong>
+        (≈{bench_min*12*100:.0f}%–{bench_max*12*100:.0f}% annually)
     </div>
     """, unsafe_allow_html=True)
 # Active benchmark values (used across presets + simulation)
