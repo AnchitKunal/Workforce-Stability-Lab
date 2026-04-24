@@ -300,7 +300,7 @@ SHOCK_SCENARIOS = {
 
 "Hiring Freeze Shock":{
     "hr_b_mult":0.4,
-    "attr_b_mult":1.35,
+    "attr_b_mult":1.15,
     "engage_delta":-8,
     "comp_gap_add":0.00
 },
@@ -337,13 +337,19 @@ def simulate_workforce(
     comp_gap, avg_salary, months=12
 ):
     RAMP        = [0.4, 0.7, 1.0]
-    REPLACE_MULT = 1.5          # industry standard replacement cost multiplier
+    replacement_multipliers = {
+    "IT / ITES":2.2,
+    "Manufacturing":1.4,
+    "Banking / Financial Services":1.8,
+    "Healthcare":2.0
+    }
+    
+    REPLACE_MULT = replacement_multipliers.get(industry,1.7)          # industry standard replacement cost multiplier
 
     employees   = float(initial_employees)
     engagement  = float(engagement_start)
     attrition   = float(base_attrition)
-    #prev_exits  = 0.0
-
+    
     bucket_1 = bucket_2 = bucket_3 = 0.0
     experienced = employees   
     results = []
@@ -359,7 +365,8 @@ def simulate_workforce(
         bucket_2    *= (1 - exit_ratio)
         bucket_3    *= (1 - exit_ratio)
 
-        hires=min(hr_capacity, exits)
+        fill_rate = 0.72
+        hires = min(hr_capacity, exits * fill_rate)
 
         fully_productive_from_ramp = bucket_3
         bucket_3 = bucket_2
@@ -374,7 +381,7 @@ def simulate_workforce(
         engagement = max(0, min(100, engagement - engagement_change))
 
         engagement_gap = engagement_start - engagement
-        z = -4 + (0.012*engagement_gap) + (0.55*comp_gap)
+        z = -2.8 + (0.045 * engagement_gap) + (2.5 * comp_gap)
         logistic_component = 1 / (1 + np.exp(-z))
         attrition = base_attrition + (
             max_attrition-base_attrition
@@ -393,9 +400,9 @@ def simulate_workforce(
         cumulative_cost += monthly_replace_cost
 
         # Productivity loss (experienced gap vs full bench)
-        productivity_loss = (
-            initial_employees * revenue_per_fte
-        ) - revenue if employees < initial_employees else 0.0
+        productivity_loss=max( 0,
+        (initial_employees*revenue_per_fte)-revenue
+        ) if employees < initial_employees else 0.0
 
         results.append({
             "Month":                    month,
@@ -623,7 +630,10 @@ if shock_choice != "None":
 
     # keep logic valid automatically
     if sim_attr_b >= max_attr_b:
-        sim_max_b = sim_attr_b * 1.25   # auto expand worst-case ceiling
+            sim_max_b = min(
+    0.06,
+    sim_attr_b*1.15
+    )   # auto expand worst-case ceiling
 
     sim_hr_b = max(
         1,
@@ -826,40 +836,66 @@ if run:
 
     preset = st.session_state.get("preset", "custom")
 
-    # PRESET PRIORITY (FOR DEMO CONSISTENCY)
-    if preset == "high":
-        risk_cls  = "risk-box-red"
+    # ==========================================================
+    # DATA-DRIVEN RISK ENGINE (Replaces preset-driven logic)
+    # ==========================================================
+    
+    final_attr_pct = final_attr_b / 100
+    
+    # Risk index (0-100)
+    attrition_score = min(100, (final_attr_pct / bench_max) * 40)
+    
+    engagement_score = max(
+        0,
+        min(25, ((70 - df_b["Engagement"].iloc[-1]) / 30) * 25)
+    )
+    
+    hiring_gap_ratio = max(
+        0,
+        1 - (sim_hr_b / max(hr_a,1))
+    )
+    
+    hiring_score = min(
+        20,
+        hiring_gap_ratio * 20
+    )
+    
+    cost_score = min(
+        15,
+        max(0,cost_diff/cum_cost_a)*15 if cum_cost_a>0 else 0
+    )
+    
+    risk_index = (
+        attrition_score +
+        engagement_score +
+        hiring_score +
+        cost_score
+    )
+    
+    # Risk Classification
+    if risk_index >= 65:
+        risk_cls = "risk-box-red"
         risk_icon = "🔴"
-        risk_text = "high workforce instability driven by structural stress conditions."
-
-    elif preset == "moderate":
-        risk_cls  = "risk-box-orange"
+        risk_text = (
+            f"high workforce instability "
+            f"(Risk Index: {risk_index:.0f}/100)."
+        )
+    
+    elif risk_index >= 40:
+        risk_cls = "risk-box-orange"
         risk_icon = "🟠"
-        risk_text = "moderate attrition pressure approaching upper benchmark thresholds."
-
-    elif preset == "stable":
-        risk_cls  = "risk-box-green"
-        risk_icon = "🟢"
-        risk_text = "stable workforce dynamics operating below benchmark levels."
-
+        risk_text = (
+            f"moderate workforce risk pressure "
+            f"(Risk Index: {risk_index:.0f}/100)."
+        )
+    
     else:
-        # CUSTOM → DATA DRIVEN
-        final_attr_pct = final_attr_b / 100
-
-        if final_attr_pct > bench_max:
-            risk_cls  = "risk-box-red"
-            risk_icon = "🔴"
-            risk_text = "high workforce instability — above benchmarks."
-
-        elif final_attr_pct > bench_min:
-            risk_cls  = "risk-box-orange"
-            risk_icon = "🟠"
-            risk_text = "moderate attrition pressure within benchmark range."
-
-        else:
-            risk_cls  = "risk-box-green"
-            risk_icon = "🟢"
-            risk_text = "stable workforce below benchmark levels."
+        risk_cls = "risk-box-green"
+        risk_icon = "🟢"
+        risk_text = (
+            f"stable workforce outlook "
+            f"(Risk Index: {risk_index:.0f}/100)."
+        )
 
     # ALWAYS RENDER (THIS WAS THE BUG)
     st.markdown(f"""
@@ -870,6 +906,7 @@ if run:
     <strong>{risk_text}</strong><br><br>
     
     <strong>Key deltas vs Base Scenario:</strong><br>
+    • Workforce Risk Index: <strong>{risk_index:.0f}/100</strong><br>
     • Headcount change: <strong>{emp_diff:+.1f}</strong><br>
     • Revenue impact: <strong>₹{rev_diff:+,.0f}</strong><br>
     • Final attrition: <strong>{final_attr_b:.2f}%</strong>
@@ -965,7 +1002,7 @@ if run:
                           name="Scenario A — Base", marker_color=COLORS["A"], opacity=0.8))
     fig4.add_trace(go.Bar(x=df_b["Month"], y=df_b["Monthly Replace Cost"],
                           name="Scenario B — Stress", marker_color=COLORS["B"], opacity=0.8))
-    fig4.update_layout(title="Monthly Replacement Cost (₹) [1.5× Avg Salary × Exits]",
+    fig4.update_layout(title="Monthly Replacement Cost (Industry-adjusted turnover cost)",
                        yaxis_title="₹", barmode="group")
     style_fig(fig4)
 
